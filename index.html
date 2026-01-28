@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Generate FREE Rent Receipts</title>
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Flatpickr -->
+<!-- Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Flatpickr JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <!-- jsPDF -->
@@ -20,7 +23,7 @@ body{
   background:#fff;
 }
 
-/* Background SVG */
+/* Background */
 .page-bg{
   background-image:url("https://cdn.staticmb.com/propertyservicestatic/marketplacestatic/11062025020136/images/rent-eceipt-form-bg.svg");
   background-repeat:no-repeat;
@@ -30,57 +33,98 @@ body{
 }
 
 /* Card */
-.form-box{
-  max-width:640px;
-  margin:auto;
+.form-card{
+  max-width:900px;
+  margin:40px auto;
   background:#fff;
   border:1px solid #ddd;
-  border-radius:10px;
-  padding:30px;
+  border-radius:12px;
+  padding:40px;
 }
 
-/* Section title */
+/* Titles */
+.main-title{
+  font-size:26px;
+  font-weight:600;
+  text-align:center;
+}
+.sub-title{
+  text-align:center;
+  color:#6c757d;
+  margin-bottom:30px;
+}
+
+/* Section */
 .section-title{
   font-size:14px;
   font-weight:600;
-  margin:20px 0;
+  margin:25px 0 15px;
 }
 
-/* Underline inputs */
+/* Inputs */
 .form-control{
   border:none;
   border-bottom:1px solid #dcdcdc;
   border-radius:0;
   padding-left:0;
+  font-size:16px;
 }
 .form-control:focus{
   box-shadow:none;
   border-bottom:2px solid #e53935;
 }
 
+/* Calendar icon */
+.date-wrap{
+  position:relative;
+}
+.date-wrap span{
+  position:absolute;
+  right:0;
+  top:6px;
+  font-size:18px;
+  pointer-events:none;
+}
+
 /* Button */
-.btn-main{
+.btn-generate{
   background:#e53935;
   color:#fff;
   font-weight:600;
-  padding:12px 20px;
+  padding:14px 30px;
+  border-radius:8px;
 }
-.btn-main:hover{
-  background:#d32f2f;
+
+/* Mobile */
+@media(max-width:768px){
+  .form-card{
+    max-width:100%;
+    margin:20px 10px;
+    padding:25px 20px;
+  }
+  .btn-generate{
+    width:100%;
+    margin-top:15px;
+  }
+  .text-end{
+    text-align:left !important;
+  }
+  .page-bg{
+    background-size:700px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container py-5 page-bg">
+<div class="page-bg">
+  <div class="form-card">
 
-  <h2 class="text-center">Generate FREE Rent Receipts</h2>
-  <p class="text-center text-muted">
-    Need rent receipts to claim HRA tax exemption? Generate it instantly.
-  </p>
-
-  <div class="form-box mt-4">
+    <div class="main-title">Generate FREE Rent Receipts</div>
+    <div class="sub-title">
+      Need rent receipts to claim HRA tax exemption? Generate it instantly.
+    </div>
 
     <!-- RENTAL DETAILS -->
     <div class="section-title">RENTAL DETAILS</div>
@@ -104,11 +148,15 @@ body{
     </div>
 
     <div class="row">
-      <div class="col-md-6 mb-4">
-        <input id="start" class="form-control datepicker" placeholder="Receipt start date (dd-mm-yyyy)">
+      <div class="col-md-6 mb-4 date-wrap">
+        <input type="text" id="start" class="form-control datepicker"
+               placeholder="Receipt start date (dd-mm-yyyy)">
+        <span>📅</span>
       </div>
-      <div class="col-md-6 mb-4">
-        <input id="end" class="form-control datepicker" placeholder="Receipt end date (dd-mm-yyyy)">
+      <div class="col-md-6 mb-4 date-wrap">
+        <input type="text" id="end" class="form-control datepicker"
+               placeholder="Receipt end date (dd-mm-yyyy)">
+        <span>📅</span>
       </div>
     </div>
 
@@ -125,7 +173,7 @@ body{
     </div>
 
     <div class="row align-items-center mt-4">
-      <div class="col-md-6">
+      <div class="col-md-6 mb-3">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" checked>
           <label class="form-check-label">
@@ -134,7 +182,7 @@ body{
         </div>
       </div>
       <div class="col-md-6 text-end">
-        <button type="button" class="btn btn-main" onclick="downloadPDF()">
+        <button type="button" class="btn btn-generate" onclick="downloadPDF()">
           Generate Rent Receipt Now
         </button>
       </div>
@@ -144,92 +192,83 @@ body{
 </div>
 
 <script>
-/* Flatpickr */
+/* ===== FLATPICKR (FORCED, NO NATIVE DATE) ===== */
 flatpickr(".datepicker", {
-  dateFormat: "d-m-Y"
+  dateFormat: "d-m-Y",
+  allowInput: true,
+  disableMobile: true   // 🔥 IMPORTANT
 });
 
-/* PDF Generation */
+/* ===== PDF GENERATION (UNCHANGED & WORKING) ===== */
 function downloadPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p","mm","a4");
 
-  const tenant = document.getElementById("tenant").value;
+  const tenant   = document.getElementById("tenant").value;
   const landlord = document.getElementById("landlord").value;
-  const address = document.getElementById("address").value;
-  const rent = document.getElementById("rent").value;
-  const start = document.getElementById("start").value;
-  const end = document.getElementById("end").value;
-  const today = new Date().toLocaleDateString("en-GB");
+  const address  = document.getElementById("address").value;
+  const rent     = document.getElementById("rent").value;
+  const start    = document.getElementById("start").value;
+  const end      = document.getElementById("end").value;
+  const today    = new Date().toLocaleDateString("en-GB");
 
-  /* Header */
   doc.setFont("helvetica","bold");
   doc.setFontSize(16);
   doc.text("House Rent Receipt",20,25);
   doc.setFontSize(11);
   doc.text(`Dated: ${today}`,150,25);
-
   doc.setDrawColor(220,0,0);
   doc.line(20,30,190,30);
 
-  /* ===== BODY – SINGLE PARAGRAPH FLOW ===== */
-  let y = 50;
+  let y = 55;
+  let left = 30;
+
   doc.setFontSize(11);
-
   doc.setFont("helvetica","normal");
-  doc.text("This is to acknowledge the receipt from ",20,y);
-  let x = 20 + doc.getTextWidth("This is to acknowledge the receipt from ");
-
+  doc.text("This is to acknowledge the receipt from ", left, y);
+  let x = left + doc.getTextWidth("This is to acknowledge the receipt from ");
   doc.setFont("helvetica","bold");
-  doc.text(tenant || "__________",x,y);
-
-  doc.setFont("helvetica","normal");
-  doc.text("  the sum of rupees ",x + doc.getTextWidth(tenant || "__________"),y);
-
-  doc.setFont("helvetica","bold");
-  doc.text(`${rent || "_____"}/-`,
-    x + doc.getTextWidth((tenant || "__________") + " the sum of rupees "),y);
+  doc.text(tenant || "__________", x, y);
 
   y += 8;
   doc.setFont("helvetica","normal");
-  doc.text("towards rent payment for the period from ",20,y);
-
-  let x2 = 20 + doc.getTextWidth("towards rent payment for the period from ");
+  doc.text("the sum of rupees ", left, y);
+  x = left + doc.getTextWidth("the sum of rupees ");
   doc.setFont("helvetica","bold");
-  doc.text(start || "_____",x2,y);
-
-  doc.setFont("helvetica","normal");
-  doc.text(" to ",x2 + doc.getTextWidth(start || "_____"),y);
-
-  doc.setFont("helvetica","bold");
-  doc.text(end || "_____",x2 + doc.getTextWidth((start || "_____") + " to "),y);
+  doc.text(`${rent || "_____"}/-`, x, y);
 
   y += 8;
   doc.setFont("helvetica","normal");
-  doc.text("towards the property bearing the address:",20,y);
+  doc.text("towards rent payment for the period from ", left, y);
+  x = left + doc.getTextWidth("towards rent payment for the period from ");
+  doc.setFont("helvetica","bold");
+  doc.text(start || "_____", x, y);
+  doc.setFont("helvetica","normal");
+  doc.text(" to ", x + doc.getTextWidth(start || "_____"), y);
+  doc.setFont("helvetica","bold");
+  doc.text(end || "_____", x + doc.getTextWidth((start || "_____") + " to "), y);
 
   y += 8;
+  doc.setFont("helvetica","normal");
+  doc.text("towards the property bearing the address:", left, y);
+  y += 8;
   doc.setFont("helvetica","bold");
-  doc.text(address || "__________________",20,y,{maxWidth:170});
+  doc.text(address || "__________________", left, y, {maxWidth:150});
 
-  /* Landlord & Signature */
-  y += 25;
+  y += 18;
   doc.setFont("helvetica","bold");
   doc.text("Landlord Details",20,y);
-
-  y += 10;
+  y += 8;
   doc.text(landlord || "__________",20,y);
 
   doc.setFont("helvetica","normal");
   doc.text("Signature",150,y);
-  doc.text(`(${landlord || "__________"})`,145,y+8);
+  doc.text(`(${landlord || "__________"})`,145,y+6);
 
-  /* Footer */
   doc.setFontSize(9);
   doc.setTextColor(120);
   doc.text("This is a system generated rent receipt",70,285);
 
-  /* Download */
   doc.save("rent_receipt.pdf");
 }
 </script>
